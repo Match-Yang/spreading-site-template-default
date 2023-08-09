@@ -10,7 +10,7 @@ export const getStaticProps = async ({ params }) => {
     props: {
       ...postData,
     },
-    revalidate: 10, // In seconds
+    revalidate: 60, // In seconds
   };
 };
 
@@ -19,7 +19,7 @@ export async function getStaticPaths() {
   const paths = await getAllSlugs();
   return {
     paths,
-    fallback: false,
+    fallback: 'blocking',
   };
 }
 

@@ -7,10 +7,10 @@
     "favicon": "path/start/from/site/folder/to/favicon",
     "projects": [
         {
-            "id": "112",
-            "name": "jjj"
+            "id": "15",
+            "name": "test project7"
         }
     ],
     "domain": "my_site.spreading.ai",
-    "doc_url": "https://zego-spreading.s3.ap-southeast-1.amazonaws.com/spreading_15/docs/"
+    "doc_url": "http://localhost:8000/3/docs/"
 }
