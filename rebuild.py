@@ -95,7 +95,13 @@ if __name__ == '__main__':
             if str(item["id"]) == site:
                 domain = item["domain"]
                 siteJson = item
-                subprocess.call(["cp", "-r", workspace+"/sites/"+site+"/favicon.ico", "./public/favicon"])
+
+                if "icon" in item and item["icon"] != "":
+                    subprocess.call(["wget", "-P", "./public", item["icon"]])
+                if "favicon" in item and item["favicon"] != "":
+                    subprocess.call(["wget", "-P", "./public/favicon", item["favicon"]])
+                
+                #subprocess.call(["cp", "-r", workspace+"/sites/"+site+"/favicon.ico", "./public/favicon"])
                 for proj in item["projects"]:
                     projNames.append(proj["name"])
                     proj = str(proj["id"])
