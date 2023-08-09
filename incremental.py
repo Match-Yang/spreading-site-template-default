@@ -28,9 +28,9 @@ def clone_all_branch(location, token, dir):
 
     return branch_list
 
-def report_build_status(url, code, msg, workspace, site):
+def report_build_status(url, code, msg, workspace, site, sign):
     print("code: " + str(code) + ", msg: " + msg)
-    body = '{"code":'+str(code)+',"msg":"'+msg+'","workspace":'+str(workspace)+',"site":'+str(site)+'}'
+    body = '{"code":'+str(code)+',"msg":"'+msg+'","workspace":'+str(workspace)+',"site":'+str(site)+',"signature":"'+sign+'"}'
     subprocess.call(["curl", "-X", "POST", "-H", "Content-Type: application/json", "-d", body, url])   
 
 def get_toc(structure, toc_id):
@@ -54,10 +54,10 @@ def remove_node(structure, toc):
 
 if __name__ == '__main__':
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "w:s:p:b:t:f:o:c:l:", 
-                                   ["workspace=", "site=", "project=", "base-domain=", "token=", "files=", "output-folder=", "callback-url=", "structure-copy-list="])
+        opts, args = getopt.getopt(sys.argv[1:], "w:s:p:b:t:f:o:c:l:e:", 
+                                   ["workspace=", "site=", "project=", "base-domain=", "token=", "files=", "output-folder=", "callback-url=", "structure-copy-list=", "signature="])
     except getopt.GetoptError as err:
-        print("usage -w <workspace> -s <site> -p <project> -b <base-domain> -t <token> -f <files> -o <output-folder> -c <callback-url> -l <structure-copy-list>")
+        print("usage -w <workspace> -s <site> -p <project> -b <base-domain> -t <token> -f <files> -o <output-folder> -c <callback-url> -l <structure-copy-list> -e <signature>")
         print(err)
         sys.exit(2)
     
@@ -82,6 +82,8 @@ if __name__ == '__main__':
             callback_url = a
         elif o in ("-l", "--structure-copy-list"):
             structure_copy_list = a
+        elif o in ("-e", "--signature"):
+            signature = a
 
     print(files)
 
@@ -99,7 +101,7 @@ if __name__ == '__main__':
                 subprocess.call(["aws", "s3", "cp", s_path + file, "s3://zego-spreading/"+t_path+"docs/", "--acl", "public-read"])
             subprocess.call(["aws", "s3", "cp", s_path + "structure.json", "s3://zego-spreading/"+t_path, "--acl", "public-read"])
 
-        report_build_status(callback_url, 0, "success", i_ws, site)
+        report_build_status(callback_url, 0, "success", i_ws, site, signature)
     except Exception as e:
-        report_build_status(callback_url, 500, str(e), i_ws, site)
+        report_build_status(callback_url, 500, str(e), i_ws, site, signature)
         sys.exit(2)

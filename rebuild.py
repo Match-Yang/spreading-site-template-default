@@ -38,13 +38,14 @@ def rename(site):
     with open("package.json", 'w') as file:
         json.dump(data, file, indent=4)
 
-def report_build_status(url, code, msg, workspace, site, api_id):
+def report_build_status(url, code, msg, workspace, site, api_id, sign):
     body = {}
     body['code'] = code
     body['msg'] = msg
     body['workspace'] = int(workspace)
     body['site'] = int(site)
     body['api_id'] = api_id
+    body['signature'] = sign
     s = json.dumps(body)
     #print(s)
 
@@ -54,9 +55,9 @@ def report_build_status(url, code, msg, workspace, site, api_id):
 
 if __name__ == '__main__':
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "w:s:b:t:c:", ["workspace=", "site=", "base-domain=", "token=", "callback-url="])
+        opts, args = getopt.getopt(sys.argv[1:], "w:s:b:t:c:e:", ["workspace=", "site=", "base-domain=", "token=", "callback-url=", "signature="])
     except getopt.GetoptError as err:
-        print("usage -w <workspace> -s <site> -b <base-domain> -t <token> -c <callback-url>")
+        print("usage -w <workspace> -s <site> -b <base-domain> -t <token> -c <callback-url> -e <signature>")
         print(err)
         sys.exit(2)
     
@@ -72,6 +73,8 @@ if __name__ == '__main__':
             token = a
         elif o in ("-c", "--callback-url"):
             callback_url = a
+        elif o in ("-e", "--signature"):
+            signature = a
         else:
             assert False, "unhandled option"
 
@@ -101,7 +104,7 @@ if __name__ == '__main__':
                     branchs = clone_all_branch(base + name, token, "./"+name)
                     projBranchs[proj] = branchs
         if domain == "":
-            report_build_status(callback_url, 500, "invalid domain", i_ws, site, "")
+            report_build_status(callback_url, 500, "invalid domain", i_ws, site, "", signature)
             sys.exit(2)
         
         # 写入本地site.json
@@ -143,7 +146,7 @@ if __name__ == '__main__':
         print("output:"+error)
         code = process.returncode
         if code != 0:
-            report_build_status(callback_url, 500, "sam build error:"+error, i_ws, site, "")
+            report_build_status(callback_url, 500, "sam build error:"+error, i_ws, site, "", signature)
             sys.exit(2)
 
         # 制品目录，先清理下历史制品
@@ -154,7 +157,7 @@ if __name__ == '__main__':
         stack = workspace.replace("_", "-")+"-"+site
         code = subprocess.call(["sam", "deploy", "--stack-name", stack, "--s3-bucket", "zego-spreading", "--s3-prefix", products_dir])
         if code != 0:
-            report_build_status(callback_url, 500, "sam deploy error", i_ws, site, "")
+            report_build_status(callback_url, 500, "sam deploy error", i_ws, site, "", signature)
             sys.exit(2)
 
         # 读取api id
@@ -162,7 +165,7 @@ if __name__ == '__main__':
         api_id = api_id.decode("utf-8").rstrip("\n\t\r")
         print("api_id:", api_id)
 
-        report_build_status(callback_url, 0, "success", i_ws, site, api_id)
+        report_build_status(callback_url, 0, "success", i_ws, site, api_id, signature)
     except Exception as e:
-        report_build_status(callback_url, 500, str(e), i_ws, site, "")
+        report_build_status(callback_url, 500, str(e), i_ws, site, "", signature)
         sys.exit(2)
