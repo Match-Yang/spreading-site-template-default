@@ -1,19 +1,14 @@
 import Post from "../interfaces/post";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Router, { useRouter } from "next/router";
 
 export default function Index(props) {
-  const router = useRouter();
+  const [firstKey, setFirstKey] = useState("")
 
-  useEffect(() => {
-    const { query } = router;
-    if (Object.keys(query).length === 0) {
-      return;
-    }
-    const { isPreview } = query;
-    let isPreviewFlag = isPreview ? "true" : "false"
-    const url = new URL('/api/tree', window.location.href);
-    url.searchParams.append("isPreview", isPreviewFlag)
+  if (typeof window !== "undefined") {
+    const router = useRouter();
+    const { asPath } = router;
+    const url = asPath === "/" ? '/api/tree' : '/api/tree?isPreview=true'
 
     const findFirstFileKey = (node) => {
       if (node && node.children && node.children.length > 0) {
@@ -31,6 +26,7 @@ export default function Index(props) {
       }
       return undefined;
     }
+
     fetch(url).then((response) => {
       response.json().then(({ result }) => {
         console.log('fetch fullTreeData', result);
@@ -41,11 +37,18 @@ export default function Index(props) {
         const firstFileKey = firstPlatform && findFirstFileKey(firstPlatform)
         console.log('firstFileKey', firstFileKey);
         if (firstFileKey) {
-          Router.push("docs/" + firstFileKey);
+          setFirstKey(firstFileKey)
         }
       });
     });
-  }, [router]);
+  }
+
+  useEffect(() => {
+    if (firstKey) {
+      Router.push("docs/" + firstKey);
+
+    }
+  }, [firstKey])
 
   return (
     <div />
