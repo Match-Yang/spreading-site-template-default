@@ -2,9 +2,9 @@
     "id": "jfew3ewfew",
     "name": "My Site",
     "title": "xxx",
-    "icon": "path/start/from/site/folder/to/icon",
+    "icon": "cloud storage url",
     "icon_redirect_url": "https://xxxx.spreading.ai",
-    "favicon": "path/start/from/site/folder/to/favicon",
+    "favicon": "cloud storage url",
     "projects": [
         {
             "id": "112",

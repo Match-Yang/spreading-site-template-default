@@ -247,7 +247,7 @@ const PreviewLayout = ({ preview, children, slug, frontmatter }: Props) => {
             <div className="min-h-screen preview-screen">
                 <header className="preview-header">
                     <div className="logo">
-                        <img src={"/icon_logo_spreading.png"} alt="spreading" />
+                        <img src={"/logo.png"} alt="spreading" />
                     </div>
                     <Space wrap>
                         {versionWidgetItemList.length > 1 ? <Select
