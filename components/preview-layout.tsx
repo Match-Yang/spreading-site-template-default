@@ -44,6 +44,7 @@ const PreviewLayout = ({ preview, children, slug, frontmatter }: Props) => {
 
     const isPreview = slug[slug.length - 1] === PREVIEW_KEY
     const [fullTreeData, setFullTreeData] = useState([]);
+    const [siteInfo, setSiteInfo] = useState({} as any);
     const [currentProject, setCurrentProjectObj] = useState({} as TreeDataObject);
     const [currentVersionDataObj, setCurrentVersionDataObj] = useState({} as TreeDataObject);
     const [currentLanguageDataObj, setCurrentLanguageDataObj] = useState({} as TreeDataObject);
@@ -70,6 +71,15 @@ const PreviewLayout = ({ preview, children, slug, frontmatter }: Props) => {
                 setFullTreeData(result);
             });
         });
+
+        const siteInfoUrl = new URL('/api/site', window.location.href);
+        fetch(siteInfoUrl).then((response) => {
+            response.json().then(({ result }) => {
+                console.log('fetch siteInfo', result);
+                setSiteInfo(result);
+            });
+        });
+
     }, []);
 
 
@@ -246,8 +256,13 @@ const PreviewLayout = ({ preview, children, slug, frontmatter }: Props) => {
         <>
             <div className="min-h-screen preview-screen">
                 <header className="preview-header">
-                    <div className="logo">
-                        <img src={"/logo.png"} alt="spreading" />
+                    <div className="logo" onClick={() => {
+                        if (siteInfo.iconRedirectUrl) {
+                            window.open(siteInfo.iconRedirectUrl, "_blank");
+                        }
+                    }}>
+                        <img src={"/logo.png"} alt={siteInfo.title || "spreading"} />
+                        <span className="title">{siteInfo.title}</span>
                     </div>
                     <Space wrap>
                         {versionWidgetItemList.length > 1 ? <Select
