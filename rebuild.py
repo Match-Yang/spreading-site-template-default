@@ -97,9 +97,9 @@ if __name__ == '__main__':
                 siteJson = item
 
                 if "icon" in item and item["icon"] != "":
-                    subprocess.call(["wget", "-O", "logo.png", "-P", "./public", item["icon"]])
+                    subprocess.call(["wget", "-O", "./public/logo.png", item["icon"]])
                 if "favicon" in item and item["favicon"] != "":
-                    subprocess.call(["wget", "-O", "favicon.ico", "-P", "./public/favicon", item["favicon"]])
+                    subprocess.call(["wget", "-O", "./public/favicon/favicon.ico", item["favicon"]])
                 
                 #subprocess.call(["cp", "-r", workspace+"/sites/"+site+"/favicon.ico", "./public/favicon"])
                 for proj in item["projects"]:
