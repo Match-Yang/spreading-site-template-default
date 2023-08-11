@@ -22,14 +22,13 @@ body {
     align-items: center;
     padding: 0 10px;
     .logo {
-      width: 170px;
       height: 50px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       img {
-        max-width: 100%;
+        max-width: 170px;
         max-height: 100%;
       }
       .title {
