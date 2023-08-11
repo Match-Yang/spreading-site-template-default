@@ -48,19 +48,23 @@
     margin-bottom: 24px;
     padding-inline-start: 28px;
     color: var(--text-primary);
-    & > li {
-      & > p {
-        font-size: 14px;
-        line-height: 25px;
-        font-weight: 300;
-        padding: 8px 0;
-      }
+    li {
+      font-size: 14px;
+      line-height: 25px;
+      font-weight: 300;
+      // padding: 8px 0;
+      margin-top: 16px;
       & > ul,
       & > ol {
         margin-top: 0;
         margin-bottom: 0;
       }
     }
+  }
+
+  & > ul,
+  & > ol {
+    padding-bottom: 8px;
   }
 
   // 无序排序序号
@@ -168,20 +172,22 @@
   blockquote {
     word-break: break-all;
     margin: 24px 0;
-    padding: 12px 0;
+    padding: 12px 24px 12px 44px;
     background: #f9f9f9;
-    display: flex;
-    padding-inline-end: 16px;
+    position: relative;
     &::before {
       content: " ";
       flex-shrink: 0;
       width: 16px;
       height: 16px;
-      margin-right: 12px;
-      margin-left: 16px;
-      margin-top: -2px;
       background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAATVJREFUOE/tk99LwzAQxy9pYxLadV3aLII/hsMHBf3//xcVH6Q6tmYr3WCzhbSSsUAtFXzzxTzlvnf34fI9guD7waPRaMI5j6uq2pRlWfTyLqRJkqQIoRB1Cniaptee551Z7XA4vG+3200fEIbhNAiCKQAcex2ACSHmhBDPNQwBpJTnGGPZhVoAklLeYozZKdG2bZuvVisNAMYVSylDjPGNi40xFQAsUBzHMaX0yiXqun4riqLsj66UmgNAYHVjTK21frFXC5hRSiObaJrmM8/z5wHjfKXUvdP3+/3HbrdbHz1IkuTO931yImut9aIPEEJEhJCZ05fL5RMA2CcAUko9ODONMWvG2HF1WZbVzoPxeDxhjF12wK+EkMYBHod23d1CFEWCc34xVGcn+Af8uQc/fNdfy1+fwJ4cLmUwaQAAAABJRU5ErkJggg==")
         no-repeat center center;
+      position: absolute;
+      left: 16px;
+      top: 12px;
+    }
+    p {
+      margin: initial;
     }
   }
   // table
@@ -210,7 +216,7 @@
     -webkit-transition: border 250ms ease-in-out 0s;
     transition: border 250ms ease-in-out 0s;
     &::-webkit-scrollbar {
-      width: 151px;
+      width: 4px;
       height: 4px;
     }
     &::-webkit-scrollbar-track {
