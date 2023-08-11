@@ -1,0 +1,6 @@
+#!/bin/sh
+
+pnpm build
+cp -r public/. .next/standalone/public
+cp -r .next/static/. .next/standalone/.next/static
+mkdir -p .next/standalone/node_modules/listen-test-ui;cp -a node_modules/listen-test-ui/* .next/standalone/node_modules/listen-test-ui
