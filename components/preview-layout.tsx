@@ -170,7 +170,7 @@ const PreviewLayout = ({ preview, children, slug, frontmatter }: Props) => {
     const fileSelectHandle: TreeProps['onSelect'] = (selectedKeys, info) => {
         console.log('fileSelectHandle', selectedKeys, info);
         const { node } = info as any;
-        if (node.type === 'file') {
+        if (node.type === 'file' && node.isContentVisible) {
             Router.push(`${node.key}`);
         } else if (node.type === 'link') {
             if (typeof window !== 'undefined') {

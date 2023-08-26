@@ -29,9 +29,6 @@ export default function DocPage({ code, frontmatter, slug }) {
 
   return (
     <div className="prose" style={{ maxWidth: "unset" }}>
-      <h1>{frontmatter.title}</h1>
-      <p>{frontmatter.description}</p>
-      <p>{frontmatter.date}</p>
       <article className="editor-wrapper">
         <Component />
       </article>
