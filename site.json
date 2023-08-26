@@ -11,6 +11,5 @@
             "name": "test project7"
         }
     ],
-    "domain": "my_site.spreading.ai",
-    "doc_url": "http://localhost:8000/3/docs/"
+    "domain": "my_site.spreading.ai"
 }

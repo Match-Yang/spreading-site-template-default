@@ -1,35 +1,48 @@
 import { getProjectNames, getVersions, getStructure } from "../../lib/docs-helper"
 
 
-const getChildrenFromToc = (prefixKey: string, structureToc: any, isPreview: Boolean) => {
+const getChildrenFromChildren = (prefixKey: string, structureChildren: any, isPreview: Boolean) => {
   const childs = []
-  for (const item of structureToc) {
-    if (item.toc) {
-      const children = getChildrenFromToc(prefixKey + "/" + item.name, item.toc, isPreview)
-      if (children.length > 0) {
-        childs.push({
-          title: item.name,
-          type: "folder",
-          key: prefixKey + "/" + item.name,
-          children
-        })
-      }
+  for (const item of structureChildren) {
+    let children = []
+    if (item.children) {
+      children = getChildrenFromChildren(prefixKey + "/" + item.name, item.children, isPreview)
+    }
+    let isContentVisible = true;
+    // 如果是preview，那么preview_hash和publish_hash任意一个值应该有效，否则证明是一个新创建且没有预览也没有发布过的文件
+    if (isPreview && !item.attributes.preview_hash && !item.attributes.publish_hash) isContentVisible = false
+    // 如果不是preview，那么publish_hash必须为有效值才表示这个文件是需要发布的
+    if (!isPreview && !item.attributes.publish_hash) isContentVisible = false
 
-    } else {
-      // Unpublished files will be ignored.
-      if (item.attributes.status === "Draft" && !item.attributes.published_hash) continue;
+    var key = item.uri
+    if (item.type === 'file') {
+      if (!isContentVisible && children.length == 0) continue
 
-      var key = item.uri
-      if (item.type === 'file') {
-        key = prefixKey + "/" + item.name + "/" + item.uri.split('/').pop().replace(/\.[^/.]+$/, "") + (isPreview ? "/preview" : "")
-      }
       childs.push({
         title: item.name,
         type: item.type,
-        key,
+        key: prefixKey + "/" + item.name + "/" + item.uri.split('/').pop().replace(/\.[^/.]+$/, "") + (isPreview ? "/preview" : ""),
+        isContentVisible,
+        children
+      })
+    } else if (item.type === 'folder') {
+      if (children.length == 0) continue
+      
+      childs.push({
+        title: item.name,
+        type: item.type,
+        key: prefixKey + "/" + item.name,
+        children
+      })
+    } else {
+      if (!isContentVisible) continue;
+
+      childs.push({
+        title: item.name,
+        type: item.type,
+        key: item.uri
       })
     }
-
   }
   return childs
 }
@@ -60,8 +73,8 @@ const getStructureFullTreeData = async (isPreview) => {
 
       const structure = await getStructure(projectName, version, isPreview);
       // console.log("[Spreading][getStructureFullTreeData] structure: ", JSON.stringify(structure))
-      
-      const languageGroups = structure.collection_group
+
+      const languageGroups = structure.folder_group
       for (const group of languageGroups) {
         const languageObj = {
           title: group.name,
@@ -69,20 +82,20 @@ const getStructureFullTreeData = async (isPreview) => {
           key: `${projectName}/${version}/${group.key.toLowerCase()}`,
           children: []
         }
-        // collection id list
+        // folder id list
         const platforms = group.values
         for (const platform of platforms) {
           // Don't show group name if there is only one
           const prefixlanguageName = languageGroups.length > 1 ? "/" + group.key.toLowerCase() : "";
-          const collection = structure.collections.find((c: { id: string; }) => c.id === platform) || {};
-          // Don't show collection name if there is only one
-          const prefixPlatformName = structure.collections.length > 1 ? "/" + collection.name : "";
+          const topLevelFolder = structure.folders.find((c: { id: string; }) => c.id === platform) || {};
+          // Don't show folder name if there is only one
+          const prefixPlatformName = structure.folders.length > 1 ? "/" + topLevelFolder.name : "";
           const prefixKey = projectName + "/" + version + prefixlanguageName + prefixPlatformName
           const platformObj = {
-            title: collection.name,
+            title: topLevelFolder.name,
             type: "folder",
-            key: `${projectName}/${version}/${group.key}/${collection.name}`,
-            children: getChildrenFromToc(prefixKey, collection.toc, isPreview)
+            key: `${projectName}/${version}/${group.key}/${topLevelFolder.name}`,
+            children: getChildrenFromChildren(prefixKey, topLevelFolder.children, isPreview)
           }
 
           languageObj.children.push(platformObj)
