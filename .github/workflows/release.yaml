@@ -1,0 +1,46 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build Next.js project
+        run: ./Makerelease
+
+      - name: Compress files
+        run: tar -czvf Site.tar.gz .next/standalone
+        
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+              --generate-notes
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Site.tar.gz
+          path: Site.tar.gz
+
+      - name: Call POST request
+        run: |
+            curl -X POST -H "Content-Type: application/json" -d '{"tag": "${{ github.ref }}", "token": '"$BUILD_TOKEN"'}' https://gpt-prompt-test-ten.vercel.app/api/update_template
