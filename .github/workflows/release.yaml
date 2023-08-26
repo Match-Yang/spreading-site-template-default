@@ -30,19 +30,15 @@ jobs:
         run: tar -czvf Site.tar.gz .next/standalone
         
       - name: Create release
+        uses: Roang-zero1/github-create-release-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}
-        run: |
-          gh release create "$tag" \
-              --repo="$GITHUB_REPOSITORY" \
-              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
-              --generate-notes
-
-      - uses: actions/upload-artifact@v3
+      - name: Upload release artifacts
+        uses: Roang-zero1/github-upload-release-artifacts-action@v2
         with:
-          name: Site.tar.gz
-          path: Site.tar.gz
+          args: "Site.tar.gz"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Call POST request
         run: |
